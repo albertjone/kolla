@@ -116,6 +116,7 @@ _PROFILE_OPTS = [
                     'murano',
                     'novajoin',
                     'octavia',
+                    'octopus',
                     'panko',
                     'qinling',
                     'rally',
@@ -674,6 +675,10 @@ SOURCES = {
         'type': 'url',
         'location': ('$tarballs_base/octavia/'
                      'octavia-5.0.0.tar.gz')},
+    'octopus-base': {
+        'type': 'url',
+        'location': ('$tarballs_base/octopus/'
+                     'octopus-11.0.1.tar.gz')},
     'panko-base': {
         'type': 'url',
         'location': ('$tarballs_base/panko/'
@@ -1199,6 +1204,10 @@ USERS = {
     'masakari-user': {
         'uid': 42485,
         'gid': 42485,
+    },
+    'octopus-user': {
+        'uid': 42486,
+        'gid': 42486,
     }
 }
 

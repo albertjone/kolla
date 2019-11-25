@@ -1,0 +1,29 @@
+FROM {{ namespace }}/{{ image_prefix }}octopus-base:{{ tag }}
+LABEL maintainer="{{ maintainer }}" name="{{ image_name }}" build-date="{{ build_date }}"
+
+{% block octopus_processor_header %}{% endblock %}
+
+{% import "macros.j2" as macros with context %}
+
+{% if install_type == 'binary' %}
+    {% if base_package_type == 'rpm' %}
+
+        {% set octopus_processor_packages = [
+                'openstack-octopus-processor',
+        ] %}
+
+    {% elif base_package_type == 'deb' %}
+
+RUN echo '{{ install_type }} not yet available for {{ base_distro }}' \
+    && /bin/false
+
+    {% endif %}
+
+{% endif %}
+
+{{ macros.install_packages(octopus_processor_packages | customizable("packages")) }}
+
+{% block octopus_processor_footer %}{% endblock %}
+{% block footer %}{% endblock %}
+
+USER octopus

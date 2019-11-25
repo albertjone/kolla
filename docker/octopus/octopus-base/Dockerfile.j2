@@ -1,0 +1,46 @@
+FROM {{ namespace }}/{{ image_prefix }}openstack-base:{{ tag }}
+LABEL maintainer="{{ maintainer }}" name="{{ image_name }}" build-date="{{ build_date }}"
+
+{% block octopus_base_header %}{% endblock %}
+
+{% import "macros.j2" as macros with context %}
+
+{{ macros.configure_user(name='octopus') }}
+
+{% if install_type == 'binary' %}
+    {% if base_package_type == 'rpm' %}
+
+        {% set octopus_base_packages = [
+                'openstack-octopus-common',
+        ] %}
+
+    {% elif base_package_type == 'deb' %}
+
+RUN echo '{{ install_type }} not yet available for {{ base_distro }}' \
+    && /bin/false
+
+    {% endif %}
+
+{{ macros.install_packages(octopus_base_packages | customizable("packages")) }}
+
+{% elif install_type == 'source' %}
+
+{% set octopus_base_pip_packages = [
+    '/octopus'
+] %}
+
+ADD octopus-base-archive /octopus-base-source
+RUN ln -s octopus-base-source/* octopus \
+    && {{ macros.install_pip(octopus_base_pip_packages | customizable("pip_packages")) }} \
+    && mkdir -p /etc/octopus  \
+    && cp -r /octopus/etc/octopus/* /etc/octopus/ \
+    && chown -R octopus: /etc/octopus
+
+{% endif %}
+
+COPY extend_start.sh /usr/local/bin/kolla_extend_start
+
+RUN touch /usr/local/bin/kolla_octopus_extend_start \
+    && chmod 755 /usr/local/bin/kolla_extend_start /usr/local/bin/kolla_octopus_extend_start
+
+{% block octopus_base_footer %}{% endblock %}
